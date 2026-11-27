@@ -32,7 +32,7 @@ Restate the full proposal (dates, sessions, durations, targets, week hours) in t
 
 ## 4. Build structured workouts
 
-For a newly composed structured session, call `buildWorkout` with every work and recovery segment in execution order. `recovery` means genuinely easy recovery between work sets: the under phase of an over-under is still work. It returns a preview with resolved targets and a `workoutDraftId`. Show the preview. If it differs from what was agreed, fix it before committing.
+For a newly composed structured session, follow the build-workout skill: it holds the segment grammar and worked examples that compile first time. `buildWorkout` returns a preview with resolved targets and a `workoutDraftId`. Show the preview. If it differs from what was agreed, fix it before committing.
 
 Use `writePlan` with `validate: true` and `blocksJson` only for existing prescriptions or shapes `buildWorkout` can't compile. Never switch representations to get around a rejected constraint.
 
