@@ -1,6 +1,6 @@
 ---
 name: boulie-plan-and-adjust
-description: Plan or change training in Boulie, from a single workout to a week or a block, including adjusting for illness, travel, fatigue, weather or a busy week. Use when the athlete says "plan next week", "build me a workout", "move Thursday", "I'm sick", "I only have 5 hours this week", or agrees a change that needs saving to their Boulie plan.
+description: Plan or change training in Boulie, from building a structured workout (intervals, over-unders, sprints, pyramids, track reps) to a week or a block, including adjusting for illness, travel, fatigue, weather or a busy week. Use when the athlete says "plan next week", "build me a workout", "move Thursday", "I'm sick", "I only have 5 hours this week", or agrees a change that needs saving to their Boulie plan.
 ---
 
 # Planning and adjusting in Boulie
@@ -32,9 +32,16 @@ Restate the full proposal (dates, sessions, durations, targets, week hours) in t
 
 ## 4. Build structured workouts
 
-For a newly composed structured session, follow the build-workout skill: it holds the segment grammar and worked examples that compile first time. `buildWorkout` returns a preview with resolved targets and a `workoutDraftId`. Show the preview. If it differs from what was agreed, fix it before committing.
+`buildWorkout` takes one flat list of segments in the order they're ridden or run, with every repeat written out. Boulie finds the repeats, resolves targets and returns a preview plus a `workoutDraftId`. It saves nothing to the plan.
 
-Use `writePlan` with `validate: true` and `blocksJson` only for existing prescriptions or shapes `buildWorkout` can't compile. Never switch representations to get around a rejected constraint.
+- **Order:** `warmup` segments first, `cooldown` segments last.
+- **Interval sections:** a run of `work` and `recovery` segments that starts and ends with `work`. Every set (the `work` between recoveries) is identical, with one identical `recovery` between sets. Add easy time after the last set to the cool-down, never as a final recovery.
+- **Over-unders and other patterns:** write the cycle out as `work` segments (over, under, over, under…). Boulie detects the cycle. The under phase is `work`, not `recovery`.
+- **Different blocks in one session** (over-unders then sprints, or each rep of a pyramid): put a `steady` segment with a target between them. `steady` starts a new section.
+- **Units:** only `work` may use `meters`. Everything else is `seconds`: convert a 200 m jog at its expected pace, and keep the distance in the coaching notes.
+- **Targets:** `[min, max]` in the session's `targetBasis`; repeat a number for a fixed target. `work` and `steady` need one. `pace_abs` is seconds per km, so smaller is faster.
+
+Check the preview `summary` reads as the agreed session (for example `3x 4x (2min @ 347W, 1min @ 297W) / 5min recovery`) before showing it. On a failure, fix exactly what its `suggestion` names. Never switch to `blocksJson` to get around a rejected constraint; use it only for existing prescriptions or shapes `buildWorkout` can't express, with `writePlan` `validate: true`. For worked examples that compile (nested over-unders, two blocks, a run pyramid in metres), read `references/workout-examples.md`.
 
 ## 5. Commit
 

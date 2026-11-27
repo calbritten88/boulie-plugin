@@ -1,6 +1,6 @@
 # Worked buildWorkout examples
 
-Every example below compiles: a test in Boulie's harness sends each one through the same builder `buildWorkout` uses. Copy the shape, then change the numbers.
+Every example below compiles: a test in Boulie's harness sends each one through the same builder `buildWorkout` uses. Copy the shape, then change the numbers. The rules behind them are in the plan-and-adjust skill, section 4.
 
 ## 1. Simple intervals: 5 × 4 min at 110% with 3 min easy
 
