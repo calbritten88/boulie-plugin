@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "boulie": {
+      "type": "http",
+      "url": "https://mcp.boulie.ai/mcp"
+    }
+  }
+}
