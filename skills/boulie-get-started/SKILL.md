@@ -18,7 +18,7 @@ Call `getCoachingContext` once. Read these before asking anything:
 - `athlete.anchors`: FTP watts, threshold pace and max HR, with resolved ladders. These are the only basis for percentage targets.
 - `capabilities`: the sport and intent vocabulary you will write with.
 
-**What empty means:** a missing anchor means Boulie doesn't have it, not that it's zero. Ask the athlete. If they don't know, plan on HR or RPE and say so. Never estimate an anchor and write targets against the estimate. An empty availability pattern means it hasn't been set: ask how many hours they have and on which days.
+**What empty means:** a missing anchor means Boulie doesn't have it, not that it's zero. Ask the athlete. If they don't know, plan on HR or RPE and say so. Never estimate an anchor and write targets against the estimate. An empty availability pattern means it hasn't been set: ask how many hours they have and on which days. Only the athlete can save a weekly pattern, in the Boulie app. For a chat-only athlete, plan to what they tell you and keep the pattern in the athlete model (step 7).
 
 ## 2. Understand recent training
 
@@ -26,7 +26,7 @@ Call `getCompletedTraining` for the last 14 days. If the athlete has connected a
 
 If it returns `available: false`, use whatever other evidence you have: an activity source connected to this conversation, or what the athlete tells you. A few weeks of summary figures (how often, how long, what kind) is enough. You don't need per-activity detail for onboarding. With no evidence source at all, ask about the last month: typical week, longest session, anything hard, any time off. That's a legitimate basis.
 
-If the athlete rides with a Wahoo or Hammerhead head unit and hasn't connected it, mention once that they can connect it in the Boulie app (Profile, then Devices). Each completed ride then sits beside its planned session automatically, so future reviews need no copying of numbers.
+If `getCompletedTraining` returns a `device` notice with a `connectUrl`, and the athlete rides with a Wahoo or Hammerhead head unit, offer that link once. It signs them in to their Devices page. Each completed ride then sits beside its planned session automatically, so future reviews need no copying of numbers.
 
 ## 3. Agree and save the goal
 
@@ -34,19 +34,23 @@ Help the athlete name what they're preparing for: an event and date, or an open 
 
 Restate the goal (title, date, priority) and get an explicit yes, then call `setGoal`. Saving a goal doesn't authorise any plan change.
 
-## 4. Agree the arc, then save the spine
+## 4. Save training references before any workout
+
+`buildWorkout` resolves every percentage target against `athlete.anchors`, so save them first. When the athlete gives an FTP, threshold pace or max HR, restate the values, get a yes, and save them in a `recordReconciliation` call with `anchorUpdates` only. A test result they quote (for example a 20-minute power) can go in the same call as a `benchmarkUpdate`.
+
+## 5. Agree the arc, then save the spine
 
 Propose the weeks from now to the goal in one compact view: theme and target hours per week, with build, recovery and taper visible. Base the starting hours on what they've actually been doing, not on what they wish they did.
 
 After explicit confirmation, call `writePlanSpine` with `macroTheme`, `targetHours` and a short `weekNote` per week. New weeks use `expectedVersion` 0. Don't add day detail beyond the current and next week.
 
-## 5. Detail the current week
+## 6. Detail the current week
 
 Follow the plan-and-adjust skill for the day-level proposal, `buildWorkout` previews and the confirmed `writePlan`. Respect the 0h days in `unavailableDates` unless the athlete says they've made time.
 
-## 6. Seed the coaching record
+## 7. Seed the coaching record
 
-Close with one `recordReconciliation` call, shown to the athlete and confirmed first:
+Close with one more `recordReconciliation` call, shown to the athlete and confirmed first:
 
 - `athleteModel`: durable context they intentionally shared (background, constraints, preferences, open questions), marked provisional.
 - `blockReview`: your provisional read of their recent training, marked provisional.
